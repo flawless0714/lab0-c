@@ -11,8 +11,8 @@
  * It uses a singly-linked list to represent the set of queue elements
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "harness.h"
@@ -26,6 +26,12 @@ queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
     /* What if malloc returned NULL? */
+    /* the following is going to solve the problem asked above */
+    if (q == NULL)
+        return NULL; /* we return NULL directly instead of reference q is for
+                        efficiency */
+    /* note that we need to initialize more member if we add more member later
+     */
     q->head = NULL;
     return q;
 }
