@@ -149,12 +149,14 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
         return false;
     /* Q: why struct ELE has size 16 bytes, isn't it just a pointer same
        as list_ele_t? */
-    /* ! not sure if bufsize - 1 included null terminator, here we counted */
+    /* not sure if bufsize - 1 included null terminator, here we counted
+       A: bufsize is NULL included */
+
     list_ele_t *tmp;
     if (sp != NULL) {
-        if ((strlen(q->head->value) + 1) < bufsize) {
+        if (strlen(q->head->value) < bufsize) {
             strcpy(sp, q->head->value);
-            sp[strlen(sp)] = '\0';
+            sp[strlen(q->head->value)] = '\0';
         }
     }
 
@@ -192,31 +194,17 @@ void q_reverse(queue_t *q)
     /* You need to write the code for this function */
     if (q == NULL)
         return;
-    if (q->head == NULL)
-        return;
-    list_ele_t *previous, *preceding, *tmp;
 
-    if (q->head->next) { /* positive reverse */
-        preceding = q->head->next;
-        previous = q->head;
+    list_ele_t *previous = NULL, *preceding = q->head, *tmp;
 
-        while (preceding) {
-            tmp = preceding->next;
-            preceding->next = previous;
-            previous = preceding;
-            preceding = tmp;
-        }
-        q->head->next = NULL;
-    } else if (q->tail->next) { /* negative reverse */
-        preceding = q->tail->next;
-        previous = q->tail;
-
-        while (preceding) {
-            tmp = preceding->next;
-            preceding->next = previous;
-            previous = preceding;
-            preceding = tmp;
-        }
-        q->tail->next = NULL;
+    while (preceding) {
+        tmp = preceding->next;
+        preceding->next = previous;
+        previous = preceding;
+        preceding = tmp;
     }
+
+    tmp = q->head;
+    q->head = q->tail;
+    q->tail = tmp;
 }
