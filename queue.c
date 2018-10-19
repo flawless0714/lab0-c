@@ -150,13 +150,18 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     /* Q: why struct ELE has size 16 bytes, isn't it just a pointer same
        as list_ele_t? */
     /* not sure if bufsize - 1 included null terminator, here we counted
-       A: bufsize is NULL included */
-
+       A: bufsize is NULL included(discovered from qtest.c) */
     list_ele_t *tmp;
     if (sp != NULL) {
-        if (strlen(q->head->value) < bufsize) {
-            strcpy(sp, q->head->value);
-            sp[strlen(q->head->value)] = '\0';
+        int remainedByte = bufsize > strlen(q->head->value)
+                               ? strlen(q->head->value)
+                               : (bufsize - 1),
+            strIndex = 0;
+        sp[remainedByte] = '\0';
+        while (remainedByte) {
+            sp[strIndex] = q->head->value[strIndex];
+            strIndex++;
+            remainedByte--;
         }
     }
 
